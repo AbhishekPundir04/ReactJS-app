@@ -1,32 +1,41 @@
 import React, { useState } from "react";
 
-import Card from "../UI/Card";
-import ExpensesFilter from "./ExpensesFilter";
-import ExpenseList from "./ExpensesList";
-import "./Expenses.css";
+import ExpenseForm from "./ExpenseForm";
+import "./NewExpense.css";
 
-const Expenses = (props) => {
-  const [filteredYear, setFilteredYear] = useState("2020");
+const NewExpense = (props) => {
+  const [isEditing, setIsEditing] = useState(false);
 
-  const filterChangeHandler = (selectedYear) => {
-    setFilteredYear(selectedYear);
+  const saveExpenseDataHandler = (enteredExpenseData) => {
+    const expenseData = {
+      ...enteredExpenseData,
+      id: Math.random().toString(),
+    };
+    props.onAddExpense(expenseData);
+    setIsEditing(false);
   };
-  const filteredExpenses = props.items.filter((expense) => {
-    return expense.date.getFullYear().toString() === filteredYear;
-  });
 
-  
+  const startEditingHandler = () => {
+    setIsEditing(true);
+  };
+
+  const stopEditingHandler = () => {
+    setIsEditing(false);
+  };
+
   return (
-    <div>
-      <Card className="expenses">
-        <ExpensesFilter
-          selected={filteredYear}
-          onChangeFilter={filterChangeHandler}
+    <div className="new-expense">
+      {!isEditing && (
+        <button onClick={startEditingHandler}>Add New Expense</button>
+      )}
+      {isEditing && (
+        <ExpenseForm
+          onSaveExpenseData={saveExpenseDataHandler}
+          onCancel={stopEditingHandler}
         />
-        <ExpenseList items ={filteredExpenses}/>
-      </Card>
+      )}
     </div>
   );
 };
 
-export default Expenses;
+export default NewExpense;
